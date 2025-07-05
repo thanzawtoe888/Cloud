@@ -1,0 +1,33 @@
+import numpy as np
+import cv2
+import matplotlib.pyplot as plt
+
+# Create blank grayscale images
+height, width = 255, 255
+frame1 = np.zeros((height, width), dtype=np.uint8)
+frame2 = np.zeros((height, width), dtype=np.uint8)
+
+# Draw a straight horizontal line in Frame 1 (centered)
+cv2.line(frame1, (30, 128), (225, 128), color=255, thickness=2)
+
+# Draw a curved line in Frame 2 to simulate fisheye distortion
+for x in range(30, 226):
+    # Simulate barrel distortion using sine wave
+    offset = int(10 * np.sin((x - 30) / 195 * np.pi))  # smooth curve
+    y = 128 + offset
+    frame2[y-1:y+2, x] = 255  # make the curve 3 pixels thick
+
+# Optional: Show both images side-by-side
+fig, axs = plt.subplots(1, 2, figsize=(10, 5))
+axs[0].imshow(frame1, cmap='gray')
+axs[0].set_title("Frame 1: Straight Line")
+axs[0].axis('off')
+
+axs[1].imshow(frame2, cmap='gray')
+axs[1].set_title("Frame 2: Curved Line (Fisheye Effect)")
+axs[1].axis('off')
+
+#save frame 2 
+cv2.imwrite("fisheye_frame2.png", frame2)
+plt.tight_layout()
+plt.show()

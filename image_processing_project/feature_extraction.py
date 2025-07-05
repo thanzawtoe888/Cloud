@@ -69,4 +69,20 @@ def detect_calcined_clay_hsv(image, lower_hsv=[0, 19, 80], upper_hsv=[20, 50, 25
     
     return mask_clean, result
 
-
+# feature_extraction.py (new function)
+def morphological_skeleton(binary_img):
+    """Implements robust skeletonization using morphological operations"""
+    skeleton = np.zeros(binary_img.shape, np.uint8)
+    elem = cv2.getStructuringElement(cv2.MORPH_CROSS, (3,3))
+    
+    while True:
+        eroded = cv2.erode(binary_img, elem)
+        temp = cv2.dilate(eroded, elem)
+        temp = cv2.subtract(binary_img, temp)
+        skeleton = cv2.bitwise_or(skeleton, temp)
+        binary_img = eroded.copy()
+        
+        if cv2.countNonZero(binary_img) == 0:
+            break
+            
+    return skeleton
